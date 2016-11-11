@@ -35,7 +35,14 @@
 ".\obj\myiic.o"
 ".\obj\inv_mpu.o"
 ".\obj\inv_mpu_dmp_motion_driver.o"
+".\obj\lenth.o"
+".\obj\usmart.o"
+".\obj\usmart_config.o"
+".\obj\usmart_str.o"
+".\obj\malloc.o"
+".\obj\gsm.o"
+".\obj\usart2.o"
 --strict --scatter ".\OBJ\MyProject.sct"
 --summary_stderr --info summarysizes --map --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
---list ".\Listings\MyProject.map" -o .\OBJ\MyProject.axf
+--list ".\MyProject.map" -o .\OBJ\MyProject.axf

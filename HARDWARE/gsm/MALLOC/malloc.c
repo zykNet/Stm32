@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 //内存池(4字节对齐)
-__align(4) u8 membase[MEM_MAX_SIZE];			//SRAM内存池
+__align(4) u8 membase[MEM_MAX_SIZE] ;			//SRAM内存池
 //内存管理表
 u16 memmapbase[MEM_ALLOC_TABLE_SIZE];			//SRAM内存池MAP
 //内存管理参数	   
@@ -156,14 +156,6 @@ void *myrealloc(void *ptr,u32 size)
         return (void*)((u32)mallco_dev.membase+offset);  			//返回新内存首地址
     }  
 }
-
-
-
-
-
-
-
-
 
 
 

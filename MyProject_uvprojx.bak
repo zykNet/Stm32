@@ -131,7 +131,7 @@
             <RestoreMemoryDisplay>1</RestoreMemoryDisplay>
             <RestoreFunctions>1</RestoreFunctions>
             <RestoreToolbox>1</RestoreToolbox>
-            <LimitSpeedToRealTime>0</LimitSpeedToRealTime>
+            <LimitSpeedToRealTime>1</LimitSpeedToRealTime>
             <RestoreSysVw>1</RestoreSysVw>
           </Simulator>
           <Target>
@@ -365,7 +365,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_MD,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>.\CORE;.\USER;.\STM32F10x_FWLib\inc;.\HARDWARE\LED;.\SYSTEM</IncludePath>
+              <IncludePath>.\CORE;.\USER;.\STM32F10x_FWLib\inc;.\HARDWARE\LED-h;.\SYSTEM</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -592,9 +592,49 @@
           <GroupName>HARD</GroupName>
           <Files>
             <File>
+              <FileName>mpu6050.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\HARDWARE\mpu6050\MPU6050\mpu6050.c</FilePath>
+            </File>
+            <File>
               <FileName>led.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\HARDWARE\LED\led.c</FilePath>
+              <FilePath>.\HARDWARE\LED-h\led.c</FilePath>
+            </File>
+            <File>
+              <FileName>myiic.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\HARDWARE\mpu6050\myiic.c</FilePath>
+            </File>
+            <File>
+              <FileName>inv_mpu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\HARDWARE\mpu6050\MPU6050\eMPL\inv_mpu.c</FilePath>
+            </File>
+            <File>
+              <FileName>inv_mpu_dmp_motion_driver.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\HARDWARE\mpu6050\MPU6050\eMPL\inv_mpu_dmp_motion_driver.c</FilePath>
+            </File>
+            <File>
+              <FileName>lenth.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\HARDWARE\hcsr-04\lenth.c</FilePath>
+            </File>
+            <File>
+              <FileName>usmart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\HARDWARE\gsm\usmart.c</FilePath>
+            </File>
+            <File>
+              <FileName>usmart_config.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\HARDWARE\gsm\usmart_config.c</FilePath>
+            </File>
+            <File>
+              <FileName>usmart_str.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\HARDWARE\gsm\usmart_str.c</FilePath>
             </File>
           </Files>
         </Group>
