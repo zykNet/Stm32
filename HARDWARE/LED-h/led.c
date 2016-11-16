@@ -1,4 +1,6 @@
 #include "led.h"
+#include "sys.h"
+#include "delay.h"
 
 //////////////////////////////////////////////////////////////////////////////////	 
 //本程序只供学习使用，未经作者许可，不得用于其它任何用途
@@ -18,20 +20,38 @@
 void LED_Init(void)
 {
  GPIO_InitTypeDef  GPIO_InitStructure;
- 	
- RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC|RCC_APB2Periph_GPIOB|RCC_APB2Periph_AFIO, ENABLE);	 //使能PA,端口时钟
-
+ RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC|RCC_APB2Periph_GPIOB|RCC_APB2Periph_AFIO, ENABLE);	 //使能PA,B,AFIO
  GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);//jatg
  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;				 //LED-->Pc.13 端口配置
  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 		 //推挽输出
  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;		 //IO口速度为50MHz
- GPIO_Init(GPIOC, &GPIO_InitStructure);					 //根据设定参数初始化GPIOA.8
+ GPIO_Init(GPIOC, &GPIO_InitStructure);					 //根据设定参数初始化GPIOc13 led
  GPIO_SetBits(GPIOC,GPIO_Pin_13);						
 
  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;	    		 
  GPIO_Init(GPIOB, &GPIO_InitStructure);	  				 
  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;	    		 
- GPIO_Init(GPIOB, &GPIO_InitStructure);	  				 
-// GPIO_SetBits(GPIOD,GPIO_Pin_2); 						 
+ GPIO_Init(GPIOB, &GPIO_InitStructure);	  	
+GPIO_ResetBits(GPIOB,GPIO_Pin_3);						
+GPIO_ResetBits(GPIOB,GPIO_Pin_4);						
+
+GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;//
+GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU; //设置成上拉输入
+GPIO_Init(GPIOB, &GPIO_InitStructure);//初始化 GPIOA15	
+ 						 
 }
  
+u8 scan(void)
+//key  pb5 pu   
+//return 0=> KEY=0=>  yes 
+{
+
+if(KEY==0)
+{
+delay_ms(10);
+	if(KEY==0)
+return 0;
+}
+
+return 1;
+}

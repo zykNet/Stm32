@@ -35,4 +35,5 @@
 .\obj\usmart_config.o: .\SYSTEM\usart.h
 .\obj\usmart_config.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 .\obj\usmart_config.o: .\HARDWARE\LED-h\malloc.h
-.\obj\usmart_config.o: .\HARDWARE\LED-h\gsm.h
+.\obj\usmart_config.o: .\HARDWARE\LED-h\mpu6050.h
+.\obj\usmart_config.o: .\HARDWARE\LED-h\myiic.h

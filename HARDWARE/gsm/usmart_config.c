@@ -8,7 +8,7 @@
 //#include "flash.h" 	
 //#include "sim900a.h" 	 
  #include "malloc.h"
-#include "gsm.h"
+#include "mpu6050.h"
 //函数名列表初始化(用户自己添加)
 //用户直接在这里输入要执行的函数名及其查找串
 struct _m_usmart_nametab usmart_nametab[]=
@@ -22,9 +22,8 @@ struct _m_usmart_nametab usmart_nametab[]=
 (void*) myfree , "void myfree(void *ptr);  ",				//内存释放(外部调用)
 (void*) *mymalloc,"void *mymalloc(u32 size);",				//内存分配(外部调用)
 (void *)mem_perused,"u8 mem_perused(void);",				//得内存使用率(外/内部调用) 
-(void*)call,"u8 call(void);",
-(void*)gprs,"u8 gprs(u8 data);",
-
+(void *)test_time_read,"void test_time_read(void)",
+(void *)a,"void a(void)", 
 //	(void*)sim900a_send_cmd,"u8 sim900a_send_cmd(u8 *cmd,u8 *ack,u16 waittime)", 	   
 	 
 };						  

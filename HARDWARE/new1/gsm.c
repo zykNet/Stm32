@@ -2,10 +2,11 @@
 #include "delay.h"
 #include "usart2.h"
 #include "malloc.h"
-#include "string.h"    
+#include <string.h>   
 #include "text.h"
 #include "gsm.h"
 
+ GPRS_Data Data; 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////// 
 //usmart支持部分 
 //将收到的AT指令应答数据返回给电脑串口
@@ -104,7 +105,7 @@ u8 call(void)
 	sim900a_send_cmd("ATH","OK",100);//挂机
 }
 
-u8 gprs(u8 data)
+u8 gprs2(u8 data)
 {
 // 	sim900a_send_cmd("AT+CIPCLOSE=1","CLOSE OK",100);	//关闭连接
 //	sim900a_send_cmd("AT+CIPSHUT","SHUT OK",100);		//关闭移动场景 
@@ -121,4 +122,61 @@ u8 gprs(u8 data)
 	Host: api.heclouds.com\r\nContent-Length: 46\r\n\
 	\r\n{\"temperature\":{\"2015-03-2T02:31:12\":22.5}}");
 	sim900a_send_cmd("AT+CIPSHUT","OK",100);
+}
+
+
+/*
+in GPRS_Data 
+out 0 --ok
+	1 --net?
+	10 --big wrong 
+*/
+
+
+u8 gprs_send( GPRS_Data  Data)
+{
+	int length_all=30,length_data=4;//strlen()
+	u8 *p1,*p2;//p1 cmd!, p2, data
+	u8 res=0;
+	//--------------
+
+
+	p1 = mymalloc(20);
+	p2 = mymalloc(200);
+	if(p1==NULL)res= 10;
+	if(p2==NULL)res= 10;
+ 	sim900a_send_cmd("AT+CIPCLOSE=1","CLOSE OK",100);	//关闭连接
+	if(sim900a_send_cmd("AT+CIPSHUT","SHUT OK",100))res= 10;		//关闭移动场景 
+	sim900a_send_cmd("AT+CSTT","OK",100);		//init ERROR
+	sim900a_send_cmd("AT+CIICR","OK",100);		//init2  ERROR
+	if(sim900a_send_cmd("AT+CIPSTART=\"TCP\",\"api.heclouds.com\",80","OK",1000))res= 1;	//link  ERROR
+	
+	if (res!=0) goto end;
+	
+	length_all+=strlen(Data.id);
+	sprintf((char*)p2,"User-Agent: ssim900A\r\napi-key: XgD=K7o=EhKrAbiWDgr462z1pQU=\r\nHost: api.heclouds.com\r\nContent-Length: %d\r\n\r\n{\"%s\":{\"%s\":%d}}\r\n",length_all,Data.id,Data.time,Data.data);//4位数据
+	sprintf((char*)p1,"AT+CIPSEND=%d",strlen(p2));//4位数据
+	sim900a_send_cmd(p1,">",100);		//length_all//send  ERROR 
+	u2_printf(p2);
+	delay_ms(10);
+	sim900a_send_cmd("AT+CIPSHUT","OK",100);
+	
+	end:
+	myfree(p1);
+	myfree(p2);
+	return res;
+	
+}
+
+void change(char a,int b)
+{
+Data.id=&a;
+Data.time="2015-03-02T02:31:12";
+Data.data=b;
+}
+void get_time(void)
+{
+
+
+
 }

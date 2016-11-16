@@ -34,3 +34,4 @@
 .\obj\mpu6050.o: .\SYSTEM\delay.h
 .\obj\mpu6050.o: .\SYSTEM\usart.h
 .\obj\mpu6050.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\obj\mpu6050.o: .\HARDWARE\LED-h\led.h

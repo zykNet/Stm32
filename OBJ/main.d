@@ -35,6 +35,7 @@
 .\obj\main.o: .\HARDWARE\LED-h\led.h
 .\obj\main.o: .\HARDWARE\LED-h\mpu6050.h
 .\obj\main.o: .\HARDWARE\LED-h\myiic.h
+.\obj\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 .\obj\main.o: .\HARDWARE\LED-h\inv_mpu.h
 .\obj\main.o: .\HARDWARE\LED-h\inv_mpu_dmp_motion_driver.h
 .\obj\main.o: .\HARDWARE\LED-h\usmart.h
@@ -42,3 +43,4 @@
 .\obj\main.o: .\HARDWARE\LED-h\malloc.h
 .\obj\main.o: .\HARDWARE\LED-h\lenth.h
 .\obj\main.o: .\HARDWARE\LED-h\usart2.h
+.\obj\main.o: .\HARDWARE\LED-h\gsm.h

@@ -4,6 +4,7 @@
 #include "led.h"
 //-------------1------------
 #include "mpu6050.h"
+#include <math.h>
 #include "inv_mpu.h"
 #include "inv_mpu_dmp_motion_driver.h" 
 //--------------2------------
@@ -12,6 +13,7 @@
 //--------------3------------
 #include "lenth.h"
 #include "usart2.h"
+#include "gsm.h"
 
 void Length_Show(void)
 {	u32 temp;
@@ -51,50 +53,66 @@ u8 call2(void)
 int main(void)
  {	
 	 //------------int----------------------
-//	short aacx,aacy,aacz;  //加速度传感器原始数据
-//	short gyrox,gyroy,gyroz; //陀螺仪原始数据
-//	u32 temp;  //温度
-//	 float pitch,roll,yaw; //欧拉角
-//	 u16 led0pwmval,dir;
+
+u8 report=1;	 
+	 int GuiJu,QvLv,ShuiPing,test=0;
+	float test_roll=0;
+Data.id="188";
+Data.time="2015-03-02T02:31:12";
+Data.data=1;
 	 //-----------Init--------------------
 	delay_init();	    	 //延时函数初始化	  
-	uart_init(115200);
-	LED_Init();		  	
+	uart_init(9600);
+	LED_Init();
+RELAY1 =0;	 
+RELAY2 =1;
+RELAY2 =0;
+	 
 	 usmart_dev.init(72);
 	 
 	 mem_init();
 	 NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
 	 
-//	MPU_Init();
-//	 while(mpu_dmp_init());
-//	 if(mpu_dmp_get_data(&pitch,&roll,&yaw)==0)
-//	{	temp=(int)(roll*10);	printf("roll is %d\r\n",roll);}
-//	Gsm_Init();
+	MPU_Init();
+	
+
+	 while(mpu_dmp_init());
+
 
 //	 Lenth_Init();
 //pwm_Init();	
 USART2_Init(9600);
 	while(1)
 	{
-//		temp=MPU_Get_Temperature(); //得到温度值
-//		MPU_Get_Accelerometer(&aacx,&aacy,&aacz); //得到加速度传感器数据
-//		MPU_Get_Gyroscope(&gyrox,&gyroy,&gyroz); //得到陀螺仪数据
+		temp=MPU_Get_Temperature(); //得到温度值
+		MPU_Get_Accelerometer(&aacx,&aacy,&aacz); //得到加速度传感器数据
+		MPU_Get_Gyroscope(&gyrox,&gyroy,&gyroz); //得到陀螺仪数据
+		if(mpu_dmp_get_data(&pitch,&roll,&yaw)==0);
+		
+		//4.5ms
+		//{temp=(int)(roll*10);	printf("roll is %d\r\n",roll);}
+
+	//if(report)mpu6050_send_data(aacz,ShuiPing,QvLv,0,0,0);//用自定义帧发送加速度和陀螺仪原始数据
+	//if(report)usart1_report_imu(aacz,ShuiPing,QvLv,test,gyroy,gyroz,(int)(roll*100),(int)(pitch*100),(int)(yaw*10));
+	if (scan()) report =1;
+		else report =0;
+	ShuiPing=sin(roll*10)*1420;
+	test=sin(test_roll*10)*1420;
+		test_roll+=0.05;
+	QvLv=(yaw-yaw_old)*1.0/3000;
+	yaw_old=yaw;
+
 	
-//printf("%d\r\n",mem_perused());
-
-	// Length_Show();
-		//uart2_show();
-
-//		if(
-//	sim900a_send_cmd("AT+CSTT","OK",100)		//init ERROR
-//		)
-//		LED=~LED;
-		call2();
-		gprs();
+// Length_Show();
+//uart2_show();
+//gprs_send(Data );
 		LED=~LED;
 //		RELAY1=~RELAY1;
 //		RELAY2=~RELAY2;		
-		delay_ms(300);
+		delay_ms(30);
+		RELAY1 =0;	 
+		RELAY2 =0;
+
 		
 	}
  }

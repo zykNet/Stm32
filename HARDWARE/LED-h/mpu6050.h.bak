@@ -113,7 +113,7 @@ void mpu6050_send_data(short aacx,short aacy,short aacz,short gyrox,short gyroy,
 void usart1_report_imu(short aacx,short aacy,short aacz,short gyrox,short gyroy,short gyroz,short roll,short pitch,short yaw);
 
 void test_time_read(void);
-void a(void);
+
 
 
 extern short aacx,aacy,aacz;  //加速度传感器原始数据
