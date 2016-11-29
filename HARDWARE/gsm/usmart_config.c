@@ -24,6 +24,8 @@ struct _m_usmart_nametab usmart_nametab[]=
 (void *)mem_perused,"u8 mem_perused(void);",				//得内存使用率(外/内部调用) 
 (void *)test_time_read,"void test_time_read(void)",
 (void *)a,"void a(void)", 
+	(void*) b,"void b(int a)",
+
 //	(void*)sim900a_send_cmd,"u8 sim900a_send_cmd(u8 *cmd,u8 *ack,u16 waittime)", 	   
 	 
 };						  

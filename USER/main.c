@@ -12,8 +12,11 @@
 #include "malloc.h"
 //--------------3------------
 #include "lenth.h"
+//---------------4-----------
 #include "usart2.h"
 #include "gsm.h"
+#include <time.h>
+
 
 void Length_Show(void)
 {	u32 temp;
@@ -54,34 +57,29 @@ int main(void)
  {	
 	 //------------int----------------------
 
-u8 report=1;	 
-	 int GuiJu,QvLv,ShuiPing,test=0;
+	u8 report=1;	 
+	int GuiJu,QvLv,ShuiPing,GaoDi,GuiXiang,test=0;
 	float test_roll=0;
-Data.id="188";
-Data.time="2015-03-02T02:31:12";
-Data.data=1;
+	Data.id="188";
+	 //	sim900a_send_cmd("AT+CLTS=1","OK",100);
+	//sim900a_send_cmd("AT+CCLK?","OK",100); 
+	//sim900a_send_cmd("AT+CSQ","OK",100);
+	Data.data=1;
 	 //-----------Init--------------------
 	delay_init();	    	 //延时函数初始化	  
 	uart_init(9600);
 	LED_Init();
-RELAY1 =0;	 
-RELAY2 =1;
-RELAY2 =0;//???
-	 
+	//RELAY2 =0;//???
 	 usmart_dev.init(72);
-	 
 	 mem_init();
 	 NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
-	 
 	MPU_Init();
 	
-
 	 while(mpu_dmp_init());
-
-
-//	 Lenth_Init();
-//pwm_Init();	
-USART2_Init(9600);
+	// Lenth_Init();
+	//pwm_Init();	
+	USART2_Init(9600);
+	printf("Init Ready!");
 	while(1)
 	{
 		temp=MPU_Get_Temperature(); //得到温度值
@@ -93,19 +91,19 @@ USART2_Init(9600);
 		//{temp=(int)(roll*10);	printf("roll is %d\r\n",roll);}
 
 	//if(report)mpu6050_send_data(aacz,ShuiPing,QvLv,0,0,0);//用自定义帧发送加速度和陀螺仪原始数据
-	//if(report)usart1_report_imu(aacz,ShuiPing,QvLv,test,gyroy,gyroz,(int)(roll*100),(int)(pitch*100),(int)(yaw*10));
+	if(report)usart1_report_imu(aacz,z[0],ShuiPing,QvLv,yaw,yaw_old,(int)(roll*100),(int)(pitch*100),(int)(yaw*10));
 	if (scan()) report =1;
 		else report =0;
+	
 	ShuiPing=sin(roll*10)*1420;
-	test=sin(test_roll*10)*1420;
-		test_roll+=0.05;
 	QvLv=(yaw-yaw_old)*1.0/3000;
 	yaw_old=yaw;
-
-	
+	GaoDi+=(aacz-z[0]);
+	GuiXiang+=(aacy-y[0]);
 // Length_Show();
 //uart2_show();
 //gprs_send(Data );
+gprs2(10);
 		LED=~LED;
 //		RELAY1=~RELAY1;
 //		RELAY2=~RELAY2;		

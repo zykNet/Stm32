@@ -1,5 +1,5 @@
 .\obj\gsm.o: HARDWARE\new1\gsm.c
-.\obj\gsm.o: .\SYSTEM\delay.h
+.\obj\gsm.o: .\HARDWARE\LED-h\myiic.h
 .\obj\gsm.o: .\SYSTEM\sys.h
 .\obj\gsm.o: .\USER\stm32f10x.h
 .\obj\gsm.o: .\CORE\core_cm3.h
@@ -30,9 +30,11 @@
 .\obj\gsm.o: .\STM32F10x_FWLib\inc\stm32f10x_usart.h
 .\obj\gsm.o: .\STM32F10x_FWLib\inc\stm32f10x_wwdg.h
 .\obj\gsm.o: .\STM32F10x_FWLib\inc\misc.h
+.\obj\gsm.o: .\SYSTEM\delay.h
 .\obj\gsm.o: .\HARDWARE\LED-h\usart2.h
 .\obj\gsm.o: .\HARDWARE\LED-h\malloc.h
 .\obj\gsm.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+.\obj\gsm.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 .\obj\gsm.o: .\HARDWARE\LED-h\text.h
 .\obj\gsm.o: .\HARDWARE\LED-h\fontupd.h
 .\obj\gsm.o: .\HARDWARE\LED-h\gsm.h

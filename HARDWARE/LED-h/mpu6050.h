@@ -114,6 +114,8 @@ void usart1_report_imu(short aacx,short aacy,short aacz,short gyrox,short gyroy,
 
 void test_time_read(void);
 void a(void);
+void b(int a);
+
 
 
 extern short aacx,aacy,aacz;  //加速度传感器原始数据

@@ -1,12 +1,71 @@
-//#include "myiic.h"
+#include "myiic.h"
 #include "delay.h"
 #include "usart2.h"
 #include "malloc.h"
 #include <string.h>   
+#include <stdio.h>   
 #include "text.h"
 #include "gsm.h"
+#include "delay.h"
+ GPRS_Data Data={"188","2015-03-02T02:31:12",12}; 
+void sim_at_response(u8 mode);
+ //2016 11  is ok!!!
+ // 1 is error
+u8 sim900a_check_time(void)
+{
+	extern GPRS_Data Data; 
+	char *b="2016******";  //  find
+	char k[30]="*****************************",k2[10];//  TimeData, Month
+	char *p,i;//  位置， 循环变量
 
- GPRS_Data Data; 
+	if(USART2_RX_STA&0X8000)		//接收到一次数据了
+	{ 
+	USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
+printf("This is time receive:");
+sim_at_response(0);
+	
+	b="2016";
+	p=strstr((char*)USART2_RX_BUF,b);
+
+	p=strstr(USART2_RX_BUF,b);
+	if (p==0)
+		return 2;
+	//------------------
+	k[19]='\0';
+	for(i=0;i<=3;i++)
+		{k[i]=*p;p++;}//year
+	
+	k[4]='-';
+	for(i=11;i<=18;i++)
+		{p++;k[i]=*p;}//time
+	k[7]='-';
+	k[10]='T';
+	
+	p=strstr(USART2_RX_BUF,b);
+	p-=7;
+	for(i=8;i<=9;i++)
+		{k[i]=*p;p++;}//data	
+	for(i=0;i<=2;i++)
+		{p++;k2[i]=*p;}//2	
+	k2[3]='\0';
+	
+	b="Nov";
+	if(strstr(k2,b))
+	{k[5]='1';k[6]='1';b="Dec";//next month
+	}//month
+	else if(strstr(k2,b))
+	{k[5]='1';k[6]='2';}
+	
+	strncpy(Data.time,k,19);
+	Data.time[19]='\0';
+printf("The response is:%s\r\n",Data.time);
+	} 
+	b="{\"errno\":";
+	if(strstr(USART2_RX_BUF,b))
+	return 0;
+	else
+	return 1;
+}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////// 
 //usmart支持部分 
 //将收到的AT指令应答数据返回给电脑串口
@@ -34,6 +93,8 @@ u8* sim900a_check_cmd(u8 *str)
 	if(USART2_RX_STA&0X8000)		//接收到一次数据了
 	{ 
 		USART2_RX_BUF[USART2_RX_STA&0X7FFF]=0;//添加结束符
+printf("This is cmd receive:");
+sim_at_response(0);
 		strx=strstr((const char*)USART2_RX_BUF,(const char*)str);
 	} 
 	return (u8*)strx;
@@ -66,62 +127,36 @@ u8 sim900a_send_cmd(u8 *cmd,u8 *ack,u16 waittime)
 		}
 		if(waittime==0)res=1; 
 	}
+	delay_ms(10);
 	return res;
-} 
-//将1个字符转换为16进制数字
-//chr:字符,0~9/A~F/a~F
-//返回值:chr对应的16进制数值
-u8 sim900a_chr2hex(u8 chr)
-{
-	if(chr>='0'&&chr<='9')return chr-'0';
-	if(chr>='A'&&chr<='F')return (chr-'A'+10);
-	if(chr>='a'&&chr<='f')return (chr-'a'+10); 
-	return 0;
 }
-//将1个16进制数字转换为字符
-//hex:16进制数字,0~15;
-//返回值:字符
-u8 sim900a_hex2chr(u8 hex)
-{
-	if(hex<=9)return hex+'0';
-	if(hex>=10&&hex<=15)return (hex-10+'A'); 
-	return '0';
-}
-u8 call(void)
-{	char callbuf[]="18702625534";
-	if(sim900a_send_cmd("AT+CLIP=1","OK",2000))return 1;	//设置来电显示  
-	if(sim900a_send_cmd("AT+COLP=1","OK",200))return 2;	//设置被叫号码显示
-	u2_printf("ATD%s;\r\n",callbuf);//拨号
-	delay_ms(3000);
-	//u2_printf("AT+CLDTMF=2,\"%c\"\r\n",kbd_tbl[key-1][0])//dtmf
-	//u2_printf("AT+VTS=%c\r\n",kbd_tbl[key-1][0]);
- 	//while(1)
-	{
-		if(USART2_RX_STA&0X8000)
-		sim_at_response(0);
-		//if(0)break;
-	}
-	sim900a_send_cmd("ATH","OK",100);//挂机
-	sim900a_send_cmd("ATH","OK",100);//挂机
-}
-
 u8 gprs2(u8 data)
 {
-// 	sim900a_send_cmd("AT+CIPCLOSE=1","CLOSE OK",100);	//关闭连接
-//	sim900a_send_cmd("AT+CIPSHUT","SHUT OK",100);		//关闭移动场景 
+	char *p1,*p2,*p3;//p1 cmd!, p2, data p3 json, p4  stolen cipstatus data
+//	u8 waitTime=0;
+	char res=0;    //retutn res 0,  1,2,10
+Data.id="ShuiPing";
+//Data.time="2015-03-02T02:31:12";
+//Data.data=223;
+	p1 = mymalloc(20);
+	p2 = mymalloc(300);
+	p3 = mymalloc(50);
+	if(p1==NULL)res= 10;
+	if(p2==NULL)res= 10;
+	sprintf((char*)p3,"{\"%s\":{\"%s\":%d}}\0",Data.id,Data.time,Data.data);//4位数据
+	sprintf((char*)p2,"POST http://api.heclouds.com/devices/4059208/datapoints?type=4 HTTP/1.1\r\nUser-Agent: sim900A\r\napi-key: XgD=K7o=EhKrAbiWDgr462z1pQU=\r\nHost: api.heclouds.com\r\nContent-Length: %d\r\n\r\n%s\r\n",strlen(p3)+2,p3);//4位数据
+	sprintf((char*)p1,"AT+CIPSEND=%d",strlen(p2));//4位数据
 
-	sim900a_send_cmd("AT+CIPSHUT","OK",100);
-
-	sim900a_send_cmd("AT+CSTT","OK",100);		//init ERROR
-	sim900a_send_cmd("AT+CIICR","OK",100);		//init2  ERROR  1=10ms
+	if(sim900a_send_cmd("AT+CIPSTATUS","STATE: CONNECT OK",100))		//link  ERROR	
+		sim900a_send_cmd("AT+CIPSTART=\"TCP\",\"api.heclouds.com\",80","OK",300);		//link  ERROR	
+	sim900a_send_cmd(p1,">",100);		//length_all//send  ERROR 
+	sim900a_send_cmd(p2,"SEND OK",300);
+	sim900a_check_time();
 	
-	sim900a_send_cmd("AT+CIPSTART=\"TCP\",\"api.heclouds.com\",80","OK",100);		//link  ERROR	
-	sim900a_send_cmd("AT+CIPSEND=223",">",100);		//send  ERROR
-	u2_printf("User-Agent: Fiddler\r\n\
-	api-key: XgD=K7o=EhKrAbiWDgr462z1pQU=\r\n\
-	Host: api.heclouds.com\r\nContent-Length: 46\r\n\
-	\r\n{\"temperature\":{\"2015-03-2T02:31:12\":22.5}}");
-	sim900a_send_cmd("AT+CIPSHUT","OK",100);
+	myfree(p1);
+	myfree(p2);
+	delay_ms(50);
+	return res;
 }
 
 
@@ -135,43 +170,66 @@ out 0 --ok
 
 u8 gprs_send( GPRS_Data  Data)
 {
-	int length_all=30,length_data=4;//strlen()
-	u8 *p1,*p2;//p1 cmd!, p2, data
-	u8 res=0;
-	//--------------
-
-
+	u8 *p1,*p2,*p3;//p1 cmd!, p2, data p3 json
+//	u8 waitTime=0;
+	u8 res=0;    //retutn res 0,  1,2,10
+	Data.id="ShuiPing";
+	Data.data=223;
 	p1 = mymalloc(20);
-	p2 = mymalloc(200);
+	p2 = mymalloc(300);
+	p3 = mymalloc(50);
 	if(p1==NULL)res= 10;
 	if(p2==NULL)res= 10;
+	sprintf((char*)p3,"{\"%s\":{\"%s\":%d}}\0",Data.id,Data.time,Data.data);//4位数据
+	sprintf((char*)p2,"POST http://api.heclouds.com/devices/4059208/datapoints?type=4 HTTP/1.1\r\nUser-Agent: sim900A\r\napi-key: XgD=K7o=EhKrAbiWDgr462z1pQU=\r\nHost: api.heclouds.com\r\nContent-Length: %d\r\n\r\n%s\r\n",strlen(p3)+2,p3);//4位数据
+	sprintf((char*)p1,"AT+CIPSEND=%d",strlen(p2));//4位数据
+	//--------------
+
+	sim900a_send_cmd("AT","OK",100);	//
+	sim900a_send_cmd("ATE1","OK",100);	//
+
  	sim900a_send_cmd("AT+CIPCLOSE=1","CLOSE OK",100);	//关闭连接
-	if(sim900a_send_cmd("AT+CIPSHUT","SHUT OK",100))res= 10;		//关闭移动场景 
-	sim900a_send_cmd("AT+CSTT","OK",100);		//init ERROR
-	sim900a_send_cmd("AT+CIICR","OK",100);		//init2  ERROR
-	if(sim900a_send_cmd("AT+CIPSTART=\"TCP\",\"api.heclouds.com\",80","OK",1000))res= 1;	//link  ERROR
-	
+	sim900a_send_cmd("AT+SAPBR=1,1","OK",100);			//init2  启用
+//	sim900a_send_cmd("AT+SAPBR=2,1","XXXXX",100);		//  查询
+	if(sim900a_send_cmd("AT+CIPSTART=\"TCP\",\"api.heclouds.com\",80","OK",100))res= 1;	//link  ERROR
+//	if(sim900a_send_cmd("AT+CIPSTART=\"TCP\",\"zyknet.e2.luyouxia.net\",32135","OK",100))res= 1;	//link  ERROR
+
+	if(sim900a_send_cmd('\0',"CONNECT OK",300))res=2;
+	//-----------------------
 	if (res!=0) goto end;
 	
-	length_all+=strlen(Data.id);
-	sprintf((char*)p2,"User-Agent: ssim900A\r\napi-key: XgD=K7o=EhKrAbiWDgr462z1pQU=\r\nHost: api.heclouds.com\r\nContent-Length: %d\r\n\r\n{\"%s\":{\"%s\":%d}}\r\n",length_all,Data.id,Data.time,Data.data);//4位数据
-	sprintf((char*)p1,"AT+CIPSEND=%d",strlen(p2));//4位数据
 	sim900a_send_cmd(p1,">",100);		//length_all//send  ERROR 
 	u2_printf(p2);
-	delay_ms(10);
+//printf(p2);
+	delay_ms(50);
+	sim900a_check_time();
 	sim900a_send_cmd("AT+CIPSHUT","OK",100);
-	
+	//-------------------------
+	myfree(p1);
+	myfree(p2);
+printf("\r\n  \r\n  \r\n %d \r\n", res);
+	return res;
 	end:
 	myfree(p1);
 	myfree(p2);
+printf("\r\n  \r\n  \r\n %d \r\n", res);
+	delay_ms(100);
 	return res;
 	
 }
 
 void change(char a,int b)
 {
-Data.id=&a;
-Data.time="2015-03-02T02:31:12";
 Data.data=b;
-
 }
+
+
+
+
+
+
+
+
+
+
+

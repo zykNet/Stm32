@@ -337,5 +337,14 @@ void a(void)
 delay_ms(5000);
 RELAY1 =0;	 
  RELAY2 =0;
+}
+void b(int a)
+{
+
+ RELAY1 =1;	 
+ RELAY2 =1;
+delay_ms(a*1000);
+RELAY1 =0;	 
+ RELAY2 =0;
 
 }

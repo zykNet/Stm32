@@ -44,7 +44,7 @@ pb8,pb9
 		usmart  调整为一个数组  一，写数组，  二， 输入指针
 		usmart  simSendCmd-》uart2 tim4  中断？？？
 
-
+11.16 高低，sim900a
 
 
 
